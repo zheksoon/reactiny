@@ -1,0 +1,33 @@
+{
+  "name": "reactiny",
+  "version": "0.1.0",
+  "type": "module",
+  "source": "src/reactiny.js",
+  "exports": {
+    "require": "./dist/reactiny.cjs",
+    "default": "./dist/reactiny.modern.js"
+  },
+  "main": "./dist/reactiny.cjs",
+  "module": "./dist/reactiny.module.js",
+  "unpkg": "./dist/reactiny.umd.js",
+  "packageManager": "yarn@3.5.0",
+  "devDependencies": {
+    "microbundle": "^0.15.1"
+  },
+  "files": [
+    "dist/",
+    "src/",
+    "package.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "microbundle"
+  },
+  "minify": {
+    "mangle": {
+      "properties": {
+        "regex": "^_"
+      }
+    }
+  }
+}
