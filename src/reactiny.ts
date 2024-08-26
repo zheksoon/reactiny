@@ -34,13 +34,11 @@ export const observable = <T>(
   equals = Object.is
 ) => {
   if (typeof valueOrComputed === "function") {
-    return computed(valueOrComputed as (() => T), equals);
+    return computed(valueOrComputed as () => T, equals);
   }
 
   let value = valueOrComputed;
-
   let subscribers = new Set<Subscriber>();
-
   let revision = {};
 
   let self: Subscription = {
@@ -79,9 +77,7 @@ export const observable = <T>(
 
     revision = {};
 
-    subscribers.forEach((subs) => {
-      subs._notify();
-    });
+    subscribers.forEach((subs) => subs._notify());
   };
 };
 
@@ -109,44 +105,35 @@ const computed = <T>(fn: () => T, equals: typeof Object.is) => {
     _notify() {
       dirty = true;
 
-      subscribers.forEach((subs) => {
-        subs._notify();
-      });
+      subscribers.forEach((subs) => subs._notify());
     },
     _checkAndDestroy() {
       if (!subscribers.size) {
-        subscriptions.forEach((revision, subs) => {
-          subs._removeSubscriber(self);
-        });
+        subscriptions.forEach((revision, subs) => subs._removeSubscriber(self));
       }
     },
     _revision() {
-      if (!dirty) {
-        return revision;
-      }
+      if (dirty) {
+        let check = true;
 
-      let check = true;
+        subscriptions.forEach((revision, subs) => {
+          check = check && subs._revision() === revision;
+        });
 
-      subscriptions.forEach((revision, subs) => {
-        check = check && subs._revision() === revision;
-      });
+        if (!check) {
+          let result = self._recompute();
 
-      if (!check) {
-        let result = self._recompute();
-
-        if (!equals(value, result)) {
-          value = result;
-          revision = {};
+          if (!equals(value, result)) {
+            value = result;
+            revision = {};
+          }
         }
       }
 
       return revision;
     },
     _recompute(): T {
-      subscriptions.forEach((revision, subs) => {
-        subs._removeSubscriber(self);
-      });
-
+      subscriptions.forEach((revision, subs) => subs._removeSubscriber(self));
       subscriptions.clear();
 
       let oldContext = context;
@@ -243,10 +230,7 @@ export const reaction = (
   };
 
   const destroy = () => {
-    subscriptions.forEach((revision, subs) => {
-      subs._removeSubscriber(self);
-    });
-
+    subscriptions.forEach((revision, subs) => subs._removeSubscriber(self));
     subscriptions.clear();
   };
 

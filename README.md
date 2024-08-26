@@ -3,43 +3,74 @@
 </p>
 
 <p align="center">
-  <img alt="NPM package gzipped size" src="https://img.shields.io/bundlephobia/minzip/reactiny?style=flat-square&logoColor=a57be8&color=a57be8
-  " />
+  <img alt="NPM package gzipped size" src="https://img.shields.io/bundlephobia/minzip/reactiny?style=flat-square&logoColor=a57be8&color=a57be8" />
 </p>
 
-**Reactiny** is a small and efficient library for reactive state management in React. With a size of less than 1KB, it offers a straightforward approach to managing state with reactivity. Whether you're building a simple app or something more complex, Reactiny is designed to keep your state management clean and efficient.
+**Reactiny** is a small and efficient library for reactive state management in React. With a size of **less than 1KB**, it offers a straightforward approach to managing state with reactivity. Whether you're building a simple app or something more complex, Reactiny is designed to keep your state management clean and efficient.
 
-### Table of Contents
+## Table of Contents
 
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Basic Usage](#basic-usage)
 - [Advanced Usage](#advanced-usage)
 - [Examples](#examples)
-- [Best Practices](#best-practices)
 - [API Reference](#api-reference)
 
 ---
 
-### Introduction
+## Just see it
 
-Reactiny is designed to make state management in React a breeze. With Reactiny, you can create observable states, define computed values that automatically update, and manage side effects using reactions. It's minimal, performant, and easy to integrate into your projects.
+Simplest counter example shows how to create an observable state and a reactive component:
 
-### Installation
+```tsx
+import { observable, useObserver } from "reactiny";
+
+// reactive observable value
+const counter = observable(0);
+
+// reactive component
+const Counter = () => {
+  // useObserver re-renders the component when the inner observables change
+  return useObserver(() => (
+    <button onClick={() => counter((c) => c + 1)}>
+      Clicked {counter()} times
+    </button>
+  ));
+};
+```
+
+Computed value example shows how to create a computed value that automatically updates when its dependencies change:
+
+```tsx
+// computed value
+const double = observable(() => counter() * 2);
+
+// also updates when counter changes
+const Double = () => {
+  return useObserver(() => <div>Double: {double()}</div>);
+};
+```
+
+## Introduction
+
+**Reactiny** is designed to make state management in React a breeze. With Reactiny, you can create observable states, define computed values that automatically update, and manage side effects using reactions. It's minimal, performant, and easy to integrate into your projects.
+
+## Installation
 
 ```bash
 npm install reactiny
 yarn add reactiny
 ```
 
-### Basic Usage
+## Basic Usage
 
-#### Observable
+### Observable
 
 The `observable` function is the heart of Reactiny. It lets you create a piece of state that your components can react to. Here’s a quick example:
 
 ```javascript
-import { observable } from 'reactiny';
+import { observable } from "reactiny";
 
 // Create an observable state
 const counter = observable(0);
@@ -62,17 +93,23 @@ Need some logic to automatically update based on your state? Computed values in 
 
 ```javascript
 const double = observable(() => counter() * 2);
+
 console.log(double()); // 4
+
+counter(3);
+
+console.log(double()); // 6
 ```
 
-### Advanced Usage
+## Advanced Usage
 
-#### Custom equality functions 
+### Custom equality functions
 
 Reactiny also allows you to define custom equality functions, which can be really handy when you need fine-grained control over when a computed value should update. For example, let's say you only care about the first two items in an array and want to recompute your state only if these two items change:
 
 ```javascript
-const arraysEqual = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
+const arraysEqual = (a, b) =>
+  a.length === b.length && a.every((v, i) => v === b[i]);
 
 const items = observable([1, 2, 3], arraysEqual);
 
@@ -90,13 +127,13 @@ console.log(firstTwoItems()); // [1, 3]
 
 In this example, `firstTwoItems` is a computed value that only updates when the first or second element of `items` changes. If you update `items` but the first two elements stay the same, `firstTwoItems` remains unchanged. This ensures that Reactiny does just what you need—no more, no less.
 
-#### Reactions
+### Reactions
 
 Reactions in Reactiny allow you to define side effects that run whenever an observable changes. These are great for tasks like logging, triggering updates, or integrating with non-React systems.
 
 ```javascript
 const destroy = reaction(() => {
-  console.log('Counter:', counter());
+  console.log("Counter:", counter());
 });
 
 counter(3); // Logs 'Counter: 3'
@@ -115,8 +152,8 @@ destroy.run();
 Here’s a simple counter component that automatically updates when the observable changes:
 
 ```javascript
-import React from 'react';
-import { observable, useObserver } from 'reactiny';
+import React from "react";
+import { observable, useObserver } from "reactiny";
 
 const counter = observable(0);
 
@@ -132,8 +169,8 @@ export default Counter;
 If you need something a bit more dynamic, try this example where a computed value automatically updates based on the state:
 
 ```javascript
-import React from 'react';
-import { observable, useObserver } from 'reactiny';
+import React from "react";
+import { observable, useObserver } from "reactiny";
 
 const counter = observable(0);
 const double = observable(() => counter() * 2);
@@ -145,13 +182,13 @@ const Double = () => {
 export default Double;
 ```
 
-#### Complex example: independent components with different update speeds
+### Complex example: independent components with different update speeds
 
 Let's take it up a notch with a more complex example. Imagine you have two components that need to update at different rates based on the same source. For instance, `FastComponent` updates every second, while `SlowComponent` updates every two seconds. The trick is that `SlowComponent` only updates when its dependent computed value changes.
 
 ```javascript
-import React, { useEffect } from 'react';
-import { observable, useObserver } from 'reactiny';
+import React, { useEffect } from "react";
+import { observable, useObserver } from "reactiny";
 
 // Observable state
 const counter = observable(0);
@@ -190,9 +227,9 @@ export default App;
 
 In this setup, the `FastComponent` updates every second, while the `SlowComponent` only updates every two seconds—specifically when `slowValue` changes. This shows how you can use Reactiny to manage more complex state-dependent logic with ease.
 
-### API Reference
+## API Reference
 
-#### `observable(initialValue, equals)`
+### `observable(initialValue, equals)`
 
 - **Parameters:**
   - `initialValue`: The initial value or a function for computed observables.
@@ -218,7 +255,8 @@ counter((c) => c + 1);
 const double = observable(() => counter() * 2);
 
 // Custom equality function
-const arraysEqual = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
+const arraysEqual = (a, b) =>
+  a.length === b.length && a.every((v, i) => v === b[i]);
 
 // Observable with custom equality function
 const items = observable([1, 2, 3], arraysEqual);
@@ -227,7 +265,7 @@ const items = observable([1, 2, 3], arraysEqual);
 const firstTwoItems = observable(() => items().slice(0, 2), arraysEqual);
 ```
 
-#### `reaction(effect, immediate = true, manager)`
+### `reaction(effect, immediate = true, manager)`
 
 - **Parameters:**
   - `effect`: The effect function to run when observables change.
@@ -240,7 +278,7 @@ const firstTwoItems = observable(() => items().slice(0, 2), arraysEqual);
 ```javascript
 // Create a reaction that logs the counter value
 const logCounter = reaction(() => {
-  console.log('Counter:', counter());
+  console.log("Counter:", counter());
 });
 
 // Change the observable, triggering the reaction
@@ -254,25 +292,29 @@ logCounter.run(); // Logs 'Counter: 10'
 
 // Using the `immediate` parameter
 const logDouble = reaction(() => {
-  console.log('Double:', double());
+  console.log("Double:", double());
 }, false); // Will not run immediately
 
 // Manually run the reaction
 logDouble.run(); // Logs 'Double: 20'
 
 // Using a `manager` function to defer execution
-const deferredReaction = reaction(() => {
-  console.log('Deferred Counter:', counter());
-}, false, () => {
-  setTimeout(deferredReaction.run, 1000); // Run after 1 second delay
-});
+const deferredReaction = reaction(
+  () => {
+    console.log("Deferred Counter:", counter());
+  },
+  false,
+  () => {
+    setTimeout(deferredReaction.run, 1000); // Run after 1 second delay
+  }
+);
 
 deferredReaction.run();
 
 counter(15); // Logs 'Deferred Counter: 15' after 1 second
 ```
 
-#### `useObserver(observer)`
+### `useObserver(observer)`
 
 - **Parameters:**
   - `observer`: A function returning a React component.
@@ -281,8 +323,8 @@ counter(15); // Logs 'Deferred Counter: 15' after 1 second
 **Example:**
 
 ```javascript
-import React from 'react';
-import { observable, useObserver } from 'reactiny';
+import React from "react";
+import { observable, useObserver } from "reactiny";
 
 // Observable state
 const counter = observable(0);
