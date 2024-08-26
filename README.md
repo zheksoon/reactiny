@@ -3,8 +3,7 @@
 </p>
 
 <p align="center">
-  <img alt="NPM package gzipped size" src="https://img.shields.io/bundlephobia/minzip/reactiny?style=flat-square&logoColor=a57be8&color=a57be8
-  " />
+  <img alt="NPM package gzipped size" src="https://img.shields.io/bundlephobia/minzip/reactiny?style=flat-square&logoColor=a57be8&color=a57be8" />
 </p>
 
 **Reactiny** is a small and efficient library for reactive state management in React. With a size of less than 1KB, it offers a straightforward approach to managing state with reactivity. Whether you're building a simple app or something more complex, Reactiny is designed to keep your state management clean and efficient.
