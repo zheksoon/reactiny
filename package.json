@@ -1,0 +1,40 @@
+{
+  "name": "reactiny",
+  "version": "0.1.1",
+  "description": "Tiniest possible reactive state management for React",
+  "type": "module",
+  "main": "dist/reactiny.ts",
+  "module": "dist/reactiny.js",
+  "types": "dist/types/reactiny.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/types/reactiny.d.ts",
+        "default": "./dist/reactiny.js"
+      },
+      "require": {
+        "types": "./dist/types/reactiny.d.cts",
+        "default": "./dist/reactiny.cjs"
+      }
+    }
+  },
+  "umd:main": "dist/reactiny.umd.js",
+  "author": "Eugene Daragan <zheksoon@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@swc/cli": "^0.4.0",
+    "@swc/core": "^1.7.18",
+    "@types/react": "^18.3.4",
+    "typescript": "^5.5.4"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "scripts": {
+    "build:esmodule": "swc src/reactiny.ts -o dist/reactiny.js -s -C module.type=es6",
+    "build:commonjs": "swc src/reactiny.ts -o dist/reactiny.cjs -s -C module.type=commonjs",
+    "build:umd": "swc src/reactiny.ts -o dist/reactiny.umd.js -s -C module.type=umd",
+    "build:types": "tsc src/reactiny.ts --declaration --emitDeclarationOnly --outDir dist/types && cp dist/types/reactiny.d.ts dist/types/reactiny.d.cts",
+    "build": "rm -rf ./dist && yarn build:esmodule && yarn build:commonjs && yarn build:umd && yarn build:types"
+  }
+}
